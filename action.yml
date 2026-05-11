@@ -28,6 +28,11 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: echo
+      shell: bash
+      run: | 
+        echo "STARTING SUPER CHANGELOG"
+      
     - name: Fetch historical changelog data
       uses: ./actions/fetch-changelog
       with:
@@ -36,6 +41,11 @@ runs:
         org_name: ${{ inputs.ORG_NAME }}
         github_token: ${{ inputs.GITHUB_ORG_TOKEN }}
 
+    - name: echo done
+      shell: bash
+      run: | 
+        echo "DONE SUPER CHANGELOG"
+        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
