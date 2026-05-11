@@ -96,3 +96,5 @@ runs:
 
         cp "$SRC" ./data.json
         echo "data_file=data.json" >> $GITHUB_OUTPUT
+        echo "Printing data.json contents:"
+        cat data.json
