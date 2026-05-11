@@ -107,7 +107,7 @@ def analyze_fork_activity(repo):
     """
 
     g = Github(os.getenv("GITHUB_AUTH_TOKEN"))
-    org_name = "DSACMS"
+    org_name = os.getenv("ORG_NAME")
     
     cutoff_date = datetime.utcnow() - timedelta(days=180)
     cutoff_date_str = cutoff_date.strftime("%Y-%m-%dT%H:%M:%SZ")
