@@ -34,7 +34,7 @@ runs:
         echo "STARTING SUPER CHANGELOG"
       
     - name: Fetch historical changelog data
-      uses: ./actions/fetch-changelog
+      uses: DSACMS/superchangelog/actions/fetch-changelog@main
       with:
         start_date: ${{ inputs.START_DATE }}
         end_date: ${{ inputs.END_DATE }}
