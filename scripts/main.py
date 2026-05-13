@@ -3,7 +3,7 @@ import sys
 import subprocess
 import os
 from datetime import datetime, timedelta
-from github import Github
+from github import Github, Auth
 
 def generate_markdown_table(stats_list, org_name, start_date, end_date):
     """
@@ -114,7 +114,8 @@ def analyze_fork_activity(repo):
     dict: A dictionary containing statistics about the forks (e.g., number of forks, recent activity)
     """
 
-    g = Github(os.getenv("GITHUB_AUTH_TOKEN"))
+    auth = Auth.Token(os.getenv("GITHUB_AUTH_TOKEN"))
+    g = Github(auth=auth)
     org_name = os.getenv("ORG_NAME")
     
     cutoff_date = datetime.utcnow() - timedelta(days=180)
@@ -160,7 +161,7 @@ def main():
     #Setting variables from environment and command line arguments
     org_name = os.getenv("ORG_NAME")
     start_date = os.getenv("START_DATE")
-    end_date = os.getenv("END_DATE") or datetime.now().strftime("%m-%d-%Y")
+    end_date = os.getenv("END_DATE") or datetime.now().strftime("%Y-%m-%d")
     
     print(start_date)
     print(end_date)
