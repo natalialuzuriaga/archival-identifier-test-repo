@@ -56,4 +56,4 @@ runs:
         shell: bash
         run: |
           echo "✅ ${{ inputs.ORG }} has been scanned for empty and readme-only repositories. See results below:"
-          echo "${{ steps.report.outputs.result }}" > empty-repo-report.json
+          echo '${{ steps.report.outputs.result }}' > empty-repo-report.json
