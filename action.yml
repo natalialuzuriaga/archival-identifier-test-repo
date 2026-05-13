@@ -60,7 +60,7 @@ runs:
 
     - name: Scan for empty and readme-only repositories
       id: scan-empty-repos
-      uses: DSACMS/archival-identifier-test-repo/actions/scan-empty-repos@main
+      uses: natalialuzuriaga/archival-identifier-test-repo/actions/scan-empty-repos@main
       with:
         VISIBILITY: ${{ inputs.VISIBILITY }}
         ORG: ${{ inputs.ORG_NAME }}
