@@ -70,7 +70,7 @@ runs:
       env:
         ORG_NAME: ${{ inputs.ORG_NAME }}
         THRESHOLD_TIME: ${{ inputs.THRESHOLD_TIME }}
-        GITHUB_ORG_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
+        GITHUB_AUTH_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
         START_DATE: ${{ inputs.START_DATE }}
         END_DATE: ${{ inputs.END_DATE }}
       run: |
