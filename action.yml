@@ -6,6 +6,16 @@ inputs:
     description: 'GitHub organization to analyze'
     required: true
   
+    VISIBILITY:
+        description: 'Which repos to scan: all, public, or private'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - public
+          - private
+  
   THRESHOLD_TIME:
     description: 'Number of days of inactivity to consider for archival'
     required: false
@@ -24,6 +34,8 @@ inputs:
     description: 'End date for historical data (YYYY-MM-DD) - defaults to today'
     required: false
     default: ''
+    
+
 
 runs:
   using: 'composite'
@@ -45,6 +57,14 @@ runs:
       shell: bash
       run: | 
         echo "DONE SUPER CHANGELOG"
+
+    - name: Scan for empty and readme-only repositories
+      id: scan-empty-repos
+      uses: DSACMS/archival-identifier-test-repo/actions/scan-empty-repos@main
+      with:
+        VISIBILITY: ${{ inputs.VISIBILITY }}
+        ORG: ${{ inputs.ORG_NAME }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -74,7 +94,7 @@ runs:
         START_DATE: ${{ inputs.START_DATE }}
         END_DATE: ${{ inputs.END_DATE }}
       run: |
-        python ${{ github.action_path }}/scripts/main.py data.json
+        python ${{ github.action_path }}/scripts/main.py data.json empty-repo-report.json
 
     - name: Create issue with archival-identifier results on the repository
       uses: JasonEtco/create-an-issue@v2
