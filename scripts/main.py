@@ -65,6 +65,8 @@ def get_criticality_score(org_name, repo_name):
     try:
         proc = subprocess.Popen(cmd_str, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         out, err = proc.communicate()
+        print(out.decode("utf-8"))
+        print(err)
         
         if not err:
             csv_str = out.decode("utf-8")
@@ -162,7 +164,7 @@ def main():
     
     print(start_date)
     print(end_date)
-    
+
     development_activity_file = sys.argv[1]
 
     with open(development_activity_file, 'r') as f:
