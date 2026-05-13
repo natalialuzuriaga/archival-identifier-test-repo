@@ -158,7 +158,11 @@ def main():
     #Setting variables from environment and command line arguments
     org_name = os.getenv("ORG_NAME")
     start_date = os.getenv("START_DATE")
-    end_date = os.getenv("END_DATE")
+    end_date = os.getenv("END_DATE") or datetime.now().strftime("%m-%d-%Y")
+    
+    print(start_date)
+    print(end_date)
+    
     development_activity_file = sys.argv[1]
 
     with open(development_activity_file, 'r') as f:
