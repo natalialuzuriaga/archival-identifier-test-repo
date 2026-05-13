@@ -28,7 +28,7 @@ def generate_markdown_table(stats_list, org_name, start_date, end_date):
     markdown += "For more information about the criteria used to determine archival candidacy, please refer to the [archival-identifier documentation](https://github.com/DSACMS/archival-identifier).\n\n"
     markdown += f"## Results: {start_date} - {end_date}\n\n"
     markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Status |\n"
-    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     
     for repo, stats in stats_list.items():
         markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['status']} |\n"
