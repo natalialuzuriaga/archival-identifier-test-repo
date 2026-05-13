@@ -57,7 +57,7 @@ runs:
       with:
         VISIBILITY: ${{ inputs.VISIBILITY }}
         ORG: ${{ inputs.ORG_NAME }}
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_ORG_TOKEN }}
         
     - name: Set up Python
       uses: actions/setup-python@v5
