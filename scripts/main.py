@@ -27,11 +27,11 @@ def generate_markdown_table(stats_list, org_name, start_date, end_date):
     markdown += "\n- Development activity\n- Reuse via forks\n- [OpenSSF Criticality Score](https://github.com/ossf/criticality_score)\n- Repository Contents\n\n"
     markdown += "For more information about the criteria used to determine archival candidacy, please refer to the [archival-identifier documentation](https://github.com/DSACMS/archival-identifier).\n\n"
     markdown += f"## Results: {start_date} - {end_date}\n\n"
-    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Dependants | Criticality Score | Forks | Active Forks | Status |\n"
+    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Status |\n"
     markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     
     for repo, stats in stats_list.items():
-        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['dependents_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['status']} |\n"
+        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['status']} |\n"
     
     return markdown
 
@@ -53,8 +53,6 @@ def get_criticality_score(org_name, repo_name):
     org_name (str)
     repo_name (str)
     
-
-    dependents_count (str)
     criticality_score (str): This value ranges from 0 to 1 (like a float) with lower scores indicating less critical projects.
     
     """
@@ -71,16 +69,13 @@ def get_criticality_score(org_name, repo_name):
         if not err:
             csv_str = out.decode("utf-8")
             items = csv_str.split(',')
-            dependents_count = items[25]
             criticality_score = items[26].rstrip()
         else: 
-            dependents_count = None
             criticality_score = None
     except:
-        dependents_count = None
         criticality_score = None
 
-    return dependents_count, criticality_score
+    return criticality_score
 
 def define_status_determination(stats):
     """
@@ -192,8 +187,7 @@ def main():
 
         # Run OpenSSF Criticality Score
         print(f"Analyzing {repo['name']}: Criticality Score")
-        dependents_count, criticality_score = get_criticality_score(os.getenv("ORG_NAME"), repo["name"])
-        stats[repo["name"]]["dependents_count"] = dependents_count # dependents_count
+        criticality_score = get_criticality_score(os.getenv("ORG_NAME"), repo["name"])
         stats[repo["name"]]["criticality_score"] = criticality_score # criticality_score
 
         # TODO: Analyze fork activity
