@@ -27,11 +27,11 @@ def generate_markdown_table(stats_list, org_name, start_date, end_date):
     markdown += "\n- Development activity\n- Reuse via forks\n- [OpenSSF Criticality Score](https://github.com/ossf/criticality_score)\n- Repository Contents\n\n"
     markdown += "For more information about the criteria used to determine archival candidacy, please refer to the [archival-identifier documentation](https://github.com/DSACMS/archival-identifier).\n\n"
     markdown += f"## Results: {start_date} to {end_date}\n\n"
-    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Status |\n"
-    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+    markdown += "| Repository | Open Issues | Closed Issues | Open PRs | Merged PRs | Closed PRs | Releases | Commits | Criticality Score | Forks | Active Forks | Is Empty/README-Only | Status |\n"
+    markdown += "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
     
     for repo, stats in stats_list.items():
-        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['status']} |\n"
+        markdown += f"| {repo} | {stats['issues_open_count']} | {stats['issues_closed_count']} | {stats['pr_open_count']} | {stats['pr_merged_count']} | {stats['pr_closed_count']} | {stats['release_count']} | {stats['commit_count']} | {stats['criticality_score']} | {stats['forks_count']} | {stats['active_forks_count']} | {stats['is_empty_or_readme_only']} | {stats['status']} |\n"
     
     return markdown
 
@@ -200,6 +200,16 @@ def main():
         forks_count, active_forks_count = analyze_fork_activity(repo["name"])
         stats[repo["name"]]["forks_count"] = forks_count
         stats[repo["name"]]["active_forks_count"] = active_forks_count
+
+        ## TODO: Analyze repository contents (e.g., is it empty or README-only)
+        print(f"Analyzing {repo['name']}: Repository contents")
+        repo_full_name = f"{org_name}/{repo['name']}"
+        if repo_full_name in empty_repo_data.get("readmeOnly", []):
+            stats[repo["name"]]["is_empty_or_readme_only"] = "README-only"
+        elif repo_full_name in empty_repo_data.get("empty", []):
+            stats[repo["name"]]["is_empty_or_readme_only"] = "Empty"
+        else:
+            stats[repo["name"]]["is_empty_or_readme_only"] = "No"
 
         # Determine the status of the repository
         stats[repo["name"]]["status"] = define_status_determination(stats[repo["name"]])
