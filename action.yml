@@ -6,15 +6,10 @@ inputs:
     description: 'GitHub organization to analyze'
     required: true
   
-    VISIBILITY:
-        description: 'Which repos to scan: all, public, or private'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - public
-          - private
+  VISIBILITY:
+    description: 'Which repos to scan: all, public, or private'
+    required: true
+    default: 'all'
   
   THRESHOLD_TIME:
     description: 'Number of days of inactivity to consider for archival'
@@ -35,8 +30,6 @@ inputs:
     required: false
     default: ''
     
-
-
 runs:
   using: 'composite'
   steps:
