@@ -100,47 +100,52 @@ def define_status_determination(stats):
     else:
         return "Active"
 
-def analyze_fork_activity(repo):
+def analyze_fork_activity(repo, start_date, end_date):
     """
     Analyze the activity of forks for a given repository.
     
-    repo_obj: A PyGithub Repository object
+    repo (str): name of repository
+    start_date (str): start date for the reporting period (YYYY-MM-DD)
+    end_date (str): end date for the analysis period (YYYY-MM-DD)
     
     dict: A dictionary containing statistics about the forks (e.g., number of forks, recent activity)
     """
 
-    # auth = Auth.Token(os.getenv("GITHUB_AUTH_TOKEN"))
-    # g = Github(auth=auth)
     g = Github(os.getenv("GITHUB_AUTH_TOKEN"))
     org_name = os.getenv("ORG_NAME")
     
-    cutoff_date = datetime.utcnow() - timedelta(days=180)
-    cutoff_date_str = cutoff_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_date = datetime.strptime(start_date, "%Y-%m-%d")
+    end_date = datetime.strptime(end_date, "%Y-%m-%d")
 
     repo_obj = g.get_repo(f"{org_name}/{repo}")
-    forks_count = len(list(repo_obj.get_forks()))
+    forks = list(repo_obj.get_forks())
+    forks_count = len(forks)
+    print( f"{repo} has {forks_count} forks.")
     active_forks = []
 
-    for fork in repo_obj.get_forks():
-        print(f"Analyzing fork: {fork.full_name}...")  # Debug statement
-        
-        # First check for recent activity in fork
-        if fork.pushed_at < datetime.now(fork.pushed_at.tzinfo) - timedelta(days=180):
-            print(f"{fork.full_name} has no recent activity.")
-            continue
+    for fork in forks:
+        print(f"Analyzing fork: {fork.full_name}...")
         
         # Then check if fork has diverged / has unique commits
         try:
-            # Compare the fork's default branch with the parent's default branch
-            comparison = repo_obj.compare(repo_obj.default_branch, fork.default_branch)
+            # Compare the parent's default branch with the fork's default branch
+            parent_sha =repo_obj.get_branch("main").commit.sha
+            fork_sha = fork.get_branch("main").commit.sha
+            print("parent sha " + parent_sha)
+            print("fork sha " + fork_sha)
 
-            if comparison.ahead_by > 0:
-                # The fork has unique commits! It's active.
-                active_forks.append((fork, comparison.ahead_by))
+            # Determine whether the fork has diverged from the parent repository
+            if fork_sha != parent_sha:
+                print("diverged")
+                
+                # Check if there are recent commits within the reporting period
+                recent_commits = fork.get_commits(since=start_date, until=end_date)
+                count = recent_commits.totalCount
+                print("recent commits: " + str(count))
+                
+                active_forks.append(fork)
             else:
-                # The fork is not ahead, so it has no new commits on its default branch
-                print(f"{fork.full_name} has no unique commits.")
-                continue
+                print("identical")
 
         except Exception as e:
             # Fork has an empty default branch or encountered other issues. Classify as inactive.
@@ -148,7 +153,8 @@ def analyze_fork_activity(repo):
                 print("Error")
             else:
                 print(f"\nCould not compare {fork.full_name}: {e}")
-    
+        
+    print(f"{len(active_forks)} active forks found for {repo}.")
     return forks_count, len(active_forks)
 
 
