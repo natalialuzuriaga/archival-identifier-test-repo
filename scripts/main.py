@@ -203,7 +203,7 @@ def main():
 
         # TODO: Analyze fork activity
         print(f"Analyzing {repo['name']}: Usage via forks")
-        forks_count, active_forks_count = analyze_fork_activity(repo["name"])
+        forks_count, active_forks_count = analyze_fork_activity(repo["name"], start_date, end_date)
         stats[repo["name"]]["forks_count"] = forks_count
         stats[repo["name"]]["active_forks_count"] = active_forks_count
 
