@@ -126,26 +126,22 @@ def analyze_fork_activity(repo, start_date, end_date):
     for fork in forks:
         print(f"Analyzing fork: {fork.full_name}...")
         
-        # Then check if fork has diverged / has unique commits
+        # Then check if fork is ahead by unique commits within reporting period
         try:
-            # Compare the parent's default branch with the fork's default branch
-            parent_sha =repo_obj.get_branch("main").commit.sha
-            fork_sha = fork.get_branch("main").commit.sha
-            print("parent sha " + parent_sha)
-            print("fork sha " + fork_sha)
+            
+            # Retrieves commits from the reporting period
+            fork_commits = fork.get_commits(since=start_date, until=end_date)
+            fork_commit_shas = { commit.sha for commit in fork_commits }
+            parent_commits = repo_obj.get_commits(since=start_date, until=end_date) # TODO: Use commits data from data.json
+            parent_commit_shas = { commit.sha for commit in parent_commits }
 
-            # Determine whether the fork has diverged from the parent repository
-            if fork_sha != parent_sha:
-                print("diverged")
-                
-                # Check if there are recent commits within the reporting period
-                recent_commits = fork.get_commits(since=start_date, until=end_date)
-                count = recent_commits.totalCount
-                print("recent commits: " + str(count))
-                
+            # Uses the set difference to determine if there are unique commits in the fork that are not in the parent repository
+            unique_fork_commits = fork_commit_shas.difference(parent_commit_shas)
+            is_ahead = len(unique_fork_commits) > 0
+
+            if is_ahead:
                 active_forks.append(fork)
-            else:
-                print("identical")
+                print(f"Fork {fork.full_name} is ahead of parent: {is_ahead} with {len(unique_fork_commits)} unique commits in the reporting period.")
 
         except Exception as e:
             # Fork has an empty default branch or encountered other issues. Classify as inactive.
