@@ -86,6 +86,9 @@ def define_status_determination(stats):
     str: The determined status of the repository (e.g., "Active", "Dormant")
     """
     # Placeholder logic for status determination
+    if stats.get("archived", True):
+        return "Archived"
+
     if all(stats.get(field, 0) == 0 for field in [
         "issues_open_count",
         "issues_closed_count",
@@ -126,7 +129,7 @@ def analyze_fork_activity(repo, start_date, end_date):
     for fork in forks:
         print(f"Analyzing fork: {fork.full_name}...")
         
-        # Then check if fork is ahead by unique commits within reporting period
+        # Check if fork is ahead by unique commits within reporting period
         try:
             
             # Retrieves commits from the reporting period
@@ -181,11 +184,10 @@ def main():
 
         # Calculate statistics for the repository
         stats[repo["name"]] = {
-            "issues_open_count": len([issue for issue in repo["issues"] if issue["state"] == "open"]),
+            "archived": repo["archived"],
+            "issues_open_count": len([issue for issue in repo["issues"] if issue["state"] == "open"  and issue["author"] != "dependabot[bot]" and issue["author"] != "github-actions[bot]"]),
             "issues_closed_count": len([issue for issue in repo["issues"] if issue["state"] == "closed"]),
-            # TODO: for pulls, add the author github-actions[bot] dependabot[bot]
-            # TODO: filter pulls by author and mentions of "code.json" in the title
-            "pr_open_count": len([pr for pr in repo["pulls"] if pr["state"] == "open"]),
+            "pr_open_count": len([pr for pr in repo["pulls"] if pr["state"] == "open" and pr["author"] != "dependabot[bot]" and pr["author"] != "github-actions[bot]"]),
             "pr_merged_count": len([pr for pr in repo["pulls"] if pr["state"] == "closed" and pr["merged"] == True]),
             "pr_closed_count": len([pr for pr in repo["pulls"] if pr["state"] == "closed" and pr["merged"] == False]),
             "release_count": len(repo["releases"]),
